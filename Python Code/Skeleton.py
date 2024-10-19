@@ -86,7 +86,7 @@ def build_four_year_plan(major, starting_quarter='Fall', starting_year=2023):
 
 # Main function
 def main():
-    selected_major = input("Please enter your major (e.g., Computer Science): ")
+    selected_major = input("Please enter your major (e.g., Computer Science): ") #TODO this input needs to come from HTML!!
     four_year_plan = build_four_year_plan(selected_major)
     
     for year, terms in four_year_plan.items():

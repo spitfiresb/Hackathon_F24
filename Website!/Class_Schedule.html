@@ -10,17 +10,8 @@
 
     <h1>University of Oregon Grad Plan Generator</h1>
 
-    <div class="form-container">
-        <!-- Form for inputting Major and Grade -->
-        <form action="#" method="post" onsubmit="event.preventDefault(); get_input_string();">
-            <label for="major">Enter your major:</label>
-            <input type="text" id="major" name="major" placeholder="e.g., Computer Science">
-            <input type="submit" value="Generate Grad Plan">
-        </form>
-    </div>
-
     <div class="dropdown-container">
-        <label for="majors">Choose your major:</label>
+        <label for="majors" id="major-tittle">Choose your major:</label><br>
         <select id="majors" name="majors">
             <option value="">--Select a Major--</option>
             <option value="computer-science">Computer Science</option>
@@ -29,7 +20,8 @@
             <option value="software-engineering">Software Engineering</option>
             <option value="cybersecurity">Cybersecurity</option>
         </select>
+      <button id="submit-button">Generate Grad Plan</button>
     </div>
-
+    
 </body>
 </html>

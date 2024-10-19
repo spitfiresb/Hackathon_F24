@@ -7,7 +7,7 @@ Noel
 - frontend react
 
 Zain
-- 'Calander" code outline
+- 'Calander' code outline
 
 Alex
 - 

@@ -1,5 +1,12 @@
 import pandas as pd
 
+"""
+This script generates a four-year course plan for a selected major based on its required courses and prerequisites. 
+It reads course data from a pandas DataFrame and constructs a list of classes, ensuring that prerequisites are fulfilled 
+before advanced courses. The user selects their major, and the script outputs a term-by-term schedule over four academic 
+years starting from a given year and quarter.
+"""
+
 # Sample DataFrame
 data = {
     'Course': ['CS122', 'CS102', 'CS103', 'MATH101', 'MATH102', 'CS201', 'CS210', 'CS211', 'CS212',

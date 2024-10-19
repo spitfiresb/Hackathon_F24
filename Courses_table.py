@@ -1,6 +1,10 @@
 import pandas as pd
 import re
 
+"""
+This program takes in all UO classes and returns a dataframe with Department, Course Number, number of Credits, Prerequisites 
+"""
+
 # Load the CSV file into a DataFrame
 df = pd.read_csv('uo_courses_with_prerequisites.csv')
 

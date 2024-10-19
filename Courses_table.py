@@ -1,6 +1,10 @@
 import pandas as pd
 import re
 
+"""
+This program takes in all UO classes and returns a dataframe with Department, Course Number, number of Credits, Prerequisites 
+"""
+
 # Load the CSV file into a DataFrame
 df = pd.read_csv('uo_courses_with_prerequisites.csv')
 
@@ -19,14 +23,26 @@ def clean_prerequisites(prereq):
     # Use regex to remove the "Prereq:" or "Requisites:" prefix
     return re.sub(r'^(Prereq:|Requisites:)\s*', '', prereq)
 
+def split_course_code(course_code):
+    # Remove period at the end, if any
+    course_code = course_code.rstrip('.')
+    # Split the course code into department and number
+    match = re.match(r'([A-Z]+)\s*(\d+)', course_code)
+    if match:
+        return pd.Series([match.group(1), match.group(2)])
+    return pd.Series([course_code, ''])  # Return original if no match
+
 # Apply the function to the "Course Name" column to create a new "Credits" column
 df['Credits'] = df['Course Name'].apply(extract_credits)
 
 # Apply the function to clean up the "Prerequisites" column
 df['Prerequisites'] = df['Prerequisites'].apply(clean_prerequisites)
 
-# Select the relevant columns: "Course Code", "Credits", and the cleaned "Prerequisites" column
-new_df = df[['Course Code', 'Credits', 'Prerequisites']]
+# Split the "Course Code" into department and number, and clean the period
+df[['Department', 'Course Number']] = df['Course Code'].apply(split_course_code)
+
+# Select the relevant columns: "Department", "Course Number", "Credits", and the cleaned "Prerequisites" column
+new_df = df[['Department', 'Course Number', 'Credits', 'Prerequisites']]
 
 # Print the resulting DataFrame
 print(new_df)

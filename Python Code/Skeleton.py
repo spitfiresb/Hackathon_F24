@@ -4,11 +4,18 @@ import pandas as pd
 data = {
     'Course': ['CS101', 'CS102', 'CS103', 'MATH101', 'MATH102', 'CS201', 'CS210', 'CS211', 'CS212'],
     'Code': ['101', '102', '103', '101', '102', '201', '210', '211', '212'],
-    'Course Name': ['Intro to CS', 'Data Structures', 'Algorithms', 'Calculus I', 'Calculus II', 'Systems Programming', 'Advanced Topics in CS', 'Theory of Computation', 'Advanced Algorithms'],
+    'Course Name': ['Intro to CS', 'Data Structures', 'Algorithms', 'Calculus I', 'Calculus II',
+                    'Systems Programming', 'Advanced Topics in CS', 'Theory of Computation', 'Advanced Algorithms'],
     'Prerequisites': [None, 'CS101', 'CS102', 'MATH101', 'MATH101', 'CS103', ['MATH251', 'MATH252'], 'CS210', 'CS210']
 }
 
 df = pd.DataFrame(data)
+
+# Dictionary containing majors and their required courses
+major_requirements = {
+    'Computer Science': ['CS211', 'CS212'],  # List of required courses for CS major
+    # Additional majors can be added here in the future
+}
 
 def find_prerequisites(course, df, prereq_set):
     row = df[df['Course'] == course]
@@ -41,9 +48,24 @@ def get_courses_for_major(major_courses, df):
     
     return all_courses
 
-# Example: assuming these are the required courses for the major (e.g., Computer Science)
-major_courses = ['CS211', 'CS212']
+def main():
+    """
+    Main function to execute the program.
+    
+    It prompts the user for their major and retrieves the required courses,
+    including prerequisites for that major.
+    """
+    # Prompt the user for their major
+    selected_major = input("Please enter your major (e.g., Computer Science): ")
+    
+    # Get the required courses for the selected major
+    if selected_major in major_requirements:
+        major_courses = major_requirements[selected_major]
+        required_courses = get_courses_for_major(major_courses, df)
+        print(f"Courses to take for {selected_major}: {required_courses}")
+    else:
+        print("Selected major is not in the list of available majors.")
 
-# Get the required courses, including prerequisites
-required_courses = get_courses_for_major(major_courses, df)
-print("Courses to take:", required_courses)
+# Run the main function
+if __name__ == "__main__":
+    main()

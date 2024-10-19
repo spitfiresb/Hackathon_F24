@@ -13,7 +13,7 @@ Zain
 - 'Calander' code outline
 
 Alex
-- 
+- READ.ME, html, skeleton code
 
 Miguel
 - 

@@ -2,23 +2,31 @@ import pandas as pd
 
 # Sample DataFrame
 data = {
-    'Course': ['CS101', 'CS102', 'CS103', 'MATH101', 'MATH102', 'CS201'],
-    'Code': ['101', '102', '103', '101', '102', '201'],
-    'Course Name': ['Intro to CS', 'Data Structures', 'Algorithms', 'Calculus I', 'Calculus II', 'Systems Programming'],
-    'Prerequisites': [None, 'CS101', 'CS102', 'MATH101', 'MATH101', 'CS103']
+    'Course': ['CS101', 'CS102', 'CS103', 'MATH101', 'MATH102', 'CS201', 'CS210', 'CS211', 'CS212'],
+    'Code': ['101', '102', '103', '101', '102', '201', '210', '211', '212'],
+    'Course Name': ['Intro to CS', 'Data Structures', 'Algorithms', 'Calculus I', 'Calculus II', 'Systems Programming', 'Advanced Topics in CS', 'Theory of Computation', 'Advanced Algorithms'],
+    'Prerequisites': [None, 'CS101', 'CS102', 'MATH101', 'MATH101', 'CS103', ['MATH251', 'MATH252'], 'CS210', 'CS210']
 }
 
 df = pd.DataFrame(data)
 
-# Function to find all prerequisites for a given course
 def find_prerequisites(course, df, prereq_set):
     row = df[df['Course'] == course]
     if not row.empty and row.iloc[0]['Prerequisites']:
-        prereq = row.iloc[0]['Prerequisites']
-        if prereq not in prereq_set:
-            prereq_set.add(prereq)
-            # Recursively find the prerequisites of this prerequisite
-            find_prerequisites(prereq, df, prereq_set)
+        prereqs = row.iloc[0]['Prerequisites']
+        # Check if there are multiple prerequisites (a list)
+        if isinstance(prereqs, list):
+            for prereq in prereqs:
+                if prereq not in prereq_set:
+                    prereq_set.add(prereq)
+                    # Recursively find the prerequisites of this prerequisite
+                    find_prerequisites(prereq, df, prereq_set)
+        else:
+            # Single prerequisite case
+            if prereqs not in prereq_set:
+                prereq_set.add(prereqs)
+                # Recursively find the prerequisites of this prerequisite
+                find_prerequisites(prereqs, df, prereq_set)    
 
 # Function to get all courses required for the major, including prerequisites
 def get_courses_for_major(major_courses, df):
@@ -34,7 +42,7 @@ def get_courses_for_major(major_courses, df):
     return all_courses
 
 # Example: assuming these are the required courses for the major (e.g., Computer Science)
-major_courses = ['CS201']
+major_courses = ['CS211', 'CS212']
 
 # Get the required courses, including prerequisites
 required_courses = get_courses_for_major(major_courses, df)

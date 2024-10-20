@@ -8,43 +8,6 @@ def normalize_string(input: str) -> str:
     """Normalize the input string by stripping whitespace and converting to uppercase."""
     return input.strip().upper()
  
-def classes_taken(classes_arr: list[str], taken_classes: str) -> list[str]:
-    taken_classes_list = taken_classes.split(",")  # Split the input string
-    # Normalize the taken classes
-    for i in range(len(taken_classes_list)):
-        taken_classes_list[i] = normalize_string(taken_classes_list[i])
- 
-    remaining_classes = []  # List to hold remaining classes
-    for cls in classes_arr:
-        if cls not in taken_classes_list:
-            remaining_classes.append(cls)  # Add class to remaining if not taken
- 
-    return remaining_classes
- 
-def build_term_schedule(cs_classes: list[str], mt_classes: list[str], taken_cs: str, taken_mt: str):
-    """Output classes needed to take for each term based on what has been taken or not taken."""
-    remaining_cs_classes = classes_taken(cs_classes, taken_cs)
-    remaining_mt_classes = classes_taken(mt_classes, taken_mt)
- 
-    term_schedule = {
-        "Fall": [],
-        "Winter": [],
-        "Spring": []
-    }
- 
-    # Assign one CS class and one Math class per term
-    terms = list(term_schedule.keys())
-    for i in range(len(terms)):
-        if remaining_cs_classes:
-            term_schedule[terms[i]].append(remaining_cs_classes.pop(0))  # Add one CS class
-        if remaining_mt_classes:
-            term_schedule[terms[i]].append(remaining_mt_classes.pop(0))  # Add one Math class
- 
-    # Print the schedule
-    print("\nTerm Schedule:")
-    for term, classes in term_schedule.items():
-        print(f"{term}: {classes}")
- 
 def eliminate_previous(courses: list[str], courses_taken: str) -> list[str]:
     """Eliminate courses that have been taken and any lower-ranked courses from the list."""
     # Normalize the taken courses
@@ -57,15 +20,53 @@ def eliminate_previous(courses: list[str], courses_taken: str) -> list[str]:
             max_index = max(max_index, courses.index(taken_course))
  
     # Return only the courses that are at or above the highest taken course index
-    #print(courses[max_index + 1:] if max_index != -1 else courses) #TEST
     return courses[max_index + 1:] if max_index != -1 else courses
  
-def is_in_arr(input: str, our_arr: list[str]) -> bool:
-    for elem in our_arr:
-        if elem == input:
-            return True
-    return False
-
+def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classes: list[str], current_year: int):
+    """Output classes needed to take for each term based on what has been taken or not taken."""
+   
+    # Create copies of the classes to modify them for each year
+    remaining_cs_classes = cs_classes[:]
+    remaining_mt_classes = mt_classes[:]
+    remaining_sci_classes = sci_classes[:]  # Add remaining science classes
+ 
+    # Iterate from the current year to the maximum year (4 for senior)
+    for year in range(current_year, 5):  # Generate schedules for years 1 to 4
+        print(f"\nYear {year} Schedule:")  # Display the correct year number
+        term_schedule = {
+            "Fall": [],
+            "Winter": [],
+            "Spring": []
+        }
+ 
+        for term in term_schedule.keys():
+            # Ensure we only take one class from each category if available
+            if remaining_cs_classes:
+                selected_cs = remaining_cs_classes.pop(0)  # Add one CS class
+                term_schedule[term].append(selected_cs)
+            if remaining_mt_classes:
+                selected_mt = remaining_mt_classes.pop(0)  # Add one Math class
+                term_schedule[term].append(selected_mt)
+            if remaining_sci_classes:
+                selected_sci = remaining_sci_classes.pop(0)  # Add one Science class
+                term_schedule[term].append(selected_sci)
+ 
+        # Print the schedule for the current year
+        for term, classes in term_schedule.items():
+            print(f"{term}: {classes}")
+ 
+def get_year(year: str) -> int:
+    """Gets string of grade year and turns it into an int."""
+    college_year = {
+        "FRESHMAN": 1,
+        "SOPHOMORE": 2,
+        "JUNIOR": 3,
+        "SENIOR": 4
+    }
+ 
+    normalized_year = normalize_string(year)
+    return college_year.get(normalized_year, 0)
+ 
 def cs_science_req():
     cs_physics = [['PHYS201', 'PHYS202', 'PHYS203'], # All 3 of these OR
                   ['PHYS251', 'PHYS252', 'PHYS253']] # All 3 of these
@@ -82,7 +83,7 @@ def cs_science_req():
 
     cs_biology = [['CH111', 'CH113', 'CH221', 'CH224'], 'BI211', ['BI212', 'BI213']] # 1 from first sublist, 1 from second sublist
 
-    science_category = (input("Which science requirement? (Physics, Chemistry, Geography, Geological Sciences, Psychology, Biology): ")).upper()
+    science_category = (input("Which science sequence are you taking? (Physics, Chemistry, Geography, Geological Sciences, Psychology, Biology): ")).upper()
     options = ['PHYSICS', 'CHEMISTRY', 'GEOGRAPHY', 'GEOLOGICAL SCIENCES', 'PSYCOLOGY', 'BIOLOGY']
     if is_in_arr(science_category, options):
         print(f"{science_category} is a valid major.")
@@ -145,33 +146,44 @@ def cs_science_req():
             return cs_science_req()
         class_list.append(cs_biology[2][int(science_selection) - 1])
         return class_list
-   
-
+ 
 def main():
-    cs_classes = ["CS122", "CS210", "CS211", "CS212", "CS313", "CS314", "CS315", "CS330", "CS415"]
+    cs_classes = ["CS122", "CS210", "CS211", "CS212", "CS313", "CS314", "CS315", "CS330", "CS415", "CS415", "CS422", "CS425"]
     mt_classes = ["MATH231", "MATH232", "MATH251", "MATH252", "MATH253", "MATH341", "MATH342"]
+    upp_div_cs = []
     majors = [normalize_string(major) for major in ["Computer Science", "Data Science", "Business"]]  # Normalize majors
-
-    cs_required_writing = ['WR320', 'WR321']
-
+   
+ 
     input_major = input("What is your major: ")
+    input_year = input("What year are you in?: ")
     normalized_major = normalize_string(input_major)  # Normalize the input major
     if is_in_arr(normalized_major, majors):
         print(f"{input_major} is a valid major.")
     else:
         print(f"{input_major} is not a valid major.")
-        return main()
+        return  # Exiting if major is invalid
+ 
+    # Get the selected science classes based on the user's input
+    selected_sci_classes = cs_science_req()
+ 
+    # Prompt for taken Science classes
+    taken_sci_classes = input("If you have taken any science sequence classes enter them here (separated by commas EX: PHYS201, PHYS202): ")
+    remaining_sci_classes = eliminate_previous(selected_sci_classes, taken_sci_classes)
  
     # Prompt for taken CS classes
-    taken_cs_classes = (input("Enter CS classes you have taken (separated by commas): ")).upper()
+    taken_cs_classes = input("Enter CS classes you have taken (separated by commas): ")
     remaining_cs_classes = eliminate_previous(cs_classes, taken_cs_classes)
  
     # Prompt for taken Math classes
-    taken_mt_classes = input("Enter Math classes you have taken (separated by commas): ").upper()
+    taken_mt_classes = input("Enter Math classes you have taken (separated by commas): ")
     remaining_mt_classes = eliminate_previous(mt_classes, taken_mt_classes)
  
-    # Build and display the term schedule
-    build_term_schedule(remaining_cs_classes, remaining_mt_classes, taken_cs_classes, taken_mt_classes)
+    # Get the current year as an integer
+    current_year = get_year(input_year)
+ 
+    # Build and display the term schedule for the remaining years
+    build_term_schedule(remaining_cs_classes, remaining_mt_classes, remaining_sci_classes, current_year)
  
 if __name__ == "__main__":
     main()
+ 

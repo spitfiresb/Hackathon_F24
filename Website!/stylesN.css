@@ -1,0 +1,140 @@
+body {
+
+    background-color: #f4f4f4; /* Light gray background */
+
+    margin: 0;
+
+    font-family: Arial, sans-serif; /* Consistent font */
+
+    padding: 20px; /* Padding around the body */
+
+    display: flex; 
+
+    flex-direction: column; 
+
+    justify-content: center; 
+
+    align-items: center; 
+
+}
+ 
+h1 {
+
+  text-align: center;
+
+  color: green;
+
+  font-size: 40px; 
+
+}
+ 
+.dropdown-container {
+
+    display: flex; 
+
+    flex-direction: column; /* Stack items vertically */
+
+    justify-content: center; 
+
+    align-items: center; 
+
+    background-color: white; /* White background for dropdown */
+
+    padding: 50px; 
+
+    max-width: 500px; 
+
+    border-radius: 10px; 
+
+    background-color: white; 
+
+}
+ 
+#major-tittle {
+
+  font-size: 30px; 
+
+  color: green; 
+
+  font-weight: bold; 
+
+}
+ 
+#majors, #year, #sci {
+
+    padding: 20px; 
+
+    border: 2px solid green; /* Correct way to set border width, style, and color */
+
+    border-radius: 5px; 
+
+    width: 400px; 
+
+}
+ 
+#submit-button {
+
+  margin-top: 20px; 
+
+  background-color: green; 
+
+  color: white; 
+
+  padding: 15px; 
+
+  border-style: none; 
+
+  border-radius: 5px; 
+
+  width: 400px; 
+
+  font-weight: normal; 
+
+  font-size: 1.0rem; 
+
+  transition: background-color 0.3s ease;
+
+}
+ 
+#submit-button:hover {
+
+    background-color: darkgreen; 
+
+}
+ 
+/* styles.css */
+
+#grad-plan-container {
+
+    margin-top: 20px;
+
+}
+ 
+.year-plan {
+
+    margin-bottom: 15px;
+
+    padding: 10px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 5px;
+
+}
+ 
+h2 {
+
+    margin: 0;
+
+    font-size: 1.5em;
+
+    color: #333;
+
+}
+ 
+strong {
+
+    font-weight: bold;
+
+}
+ 

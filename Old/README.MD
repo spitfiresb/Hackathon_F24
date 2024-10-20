@@ -3,17 +3,4 @@
 Motivation:
 - Lack of academic advisors at universities, few advising appointments around registration time. If advisors spend less time building schedules they have more time to help with career/preofessional development.
 
-Michael
-- Compile class shedule dataframe
-
-Noel
-- frontend react
-
-Zain
-- 'Calander' code outline
-
-Alex
-- READ.ME, html, skeleton code
-
-Miguel
-- 
+- Limitations: Currently only functional and accurate for the Computer Science Major. Terminal interaction only.

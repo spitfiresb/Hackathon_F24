@@ -38,7 +38,7 @@ data = {
 
 
 # Load the CSV file into a DataFrame
-df = pd.read_csv('../Database/uo_courses_with_prerequisites.csv')
+df = pd.read_csv('uo_courses_with_prerequisites.csv')
 
 
 # Define a function to extract only the credits from the Course Name column

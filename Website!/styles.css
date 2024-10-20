@@ -50,7 +50,7 @@ h1 {
   font-weight: bold; 
 }
 
-#majors {
+#majors , #year, #sci{
     padding: 20px; 
     border: 2px solid green; /* Correct way to set border width, style, and color */
     border-radius: 5px; 

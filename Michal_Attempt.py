@@ -32,9 +32,9 @@ def eliminate_previous(courses: list[str], courses_taken: str) -> list[str]:
 def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classes: list[str], current_year: int):
     """Output classes needed to take for each term based on what has been taken or not taken."""
     # terms which cs classes are offered
-    fall = ["CS102", "CS122", "CS210", "CS212", "CS313", "CS314", "CS322", "CS415", "CS425", "CS422", "CS431", "CS432", "CS443", "CS451", "CS471", "CS410", "DSCI311"]
-    winter = ["CS102", "CS122", "CS210", "CS211", "CS313", "CS314", "CS315", "CS330", "CS333", "CS372M", "CS422", "CS429", "CS433", "CS445", "CS453", "CS410"]
-    spring = ["CS102", "CS122", "CS210", "CS211", "CS212", "CS315", "CS322", "CS330", "CS415", "CS425", "CS422", "CS423", "CS434", "CS436", "CS472", "CS473", "CS410"]
+    fall = ["CS102", "CS122", "CS210", "CS212", "CS313", "CS314", "CS322", "CS415", "CS425", "CS422", "CS431", "CS432", "CS443", "CS451", "CS471", "CS410", "DSCI311", "CS455", "CS413", "J431"]
+    winter = ["CS102", "CS122", "CS210", "CS211", "CS313", "CS314", "CS315", "CS330", "CS333", "CS372M", "CS422", "CS429", "CS433", "CS445", "CS453", "CS410", "CS455", "CS413", "J431"]
+    spring = ["CS102", "CS122", "CS210", "CS211", "CS212", "CS315", "CS322", "CS330", "CS415", "CS425", "CS422", "CS423", "CS434", "CS436", "CS472", "CS473", "CS410", "CS455", "CS413", "J431"]
     terms = {"Fall": fall, "Winter": winter, "Spring": spring}
 
 
@@ -46,10 +46,9 @@ def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classe
     remaining_gen_ed = ["A&L", "A&L", "A&L", "A&L", "SSC", "SSC", "SSC", "SSC", "GP", "US"]
 
     year = current_year
-    cs313_taken = "CS313" not in remaining_cs_classes  # Check if CS313 is already taken
 
     # Iterate from the current year to the maximum year (4 for senior)
-    while len(remaining_cs_classes) > 0 or len(remaining_mt_classes) > 0 or len(remaining_sci_classes) > 0:
+    while len(remaining_cs_classes) > 0 or len(remaining_mt_classes) > 0 or len(remaining_sci_classes) > 0 or len(remaining_wr_classes) > 0 or len(remaining_gen_ed) > 0:
         print(f"\nYear {year} Schedule:")  # Display the correct year number
         term_schedule = {
             "Fall": [],
@@ -59,6 +58,7 @@ def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classe
 
         for term in term_schedule.keys():
             # Determine the number of CS classes per term (2 if CS313 has been taken, 1 otherwise)
+            cs313_taken = "CS313" not in remaining_cs_classes  # Check if CS313 is already taken
             max_cs_per_term = 2 if cs313_taken else 1
 
             # Add CS classes to the term
@@ -98,7 +98,6 @@ def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classe
                     remaining_gen_ed.remove(random_gened_course)
                     term_schedule[term].append(random_gened_course)
                 break
-        print(remaining_cs_classes)
         # Display the schedule for the current year
         for term, classes in term_schedule.items():
             if classes:
@@ -113,29 +112,6 @@ def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classe
             print(remaining_gen_ed)
             print(remaining_mt_classes)
             break
-
-
-            # # If we've taken 313 already, we can take two cs classes per term
-            # if (len(remaining_cs_classes) >= 2) and ("CS313" not in remaining_cs_classes):
-            #     for i in range(2):
-            #         selected_cs = remaining_cs_classes.pop(0)  # Add one CS class
-            #         term_schedule[term].append(selected_cs)
-            # elif remaining_cs_classes:
-            #     selected_cs = remaining_cs_classes.pop(0)  # Add one CS class
-            #     term_schedule[term].append(selected_cs)
-            #
-            # if remaining_mt_classes:
-            #     selected_mt = remaining_mt_classes.pop(0)  # Add one Math class
-            #     term_schedule[term].append(selected_mt)
-            # if remaining_sci_classes:
-            #     selected_sci = remaining_sci_classes.pop(0)  # Add one Science class
-            #     term_schedule[term].append(selected_sci)
-
-        # Print the schedule for the current year
-        # for term, classes in term_schedule.items():
-        #     print(f"{term}: {classes}")
-        #
-        # year += 1
 
 
 def get_year(year: str) -> int:
@@ -181,7 +157,7 @@ def cs_science_req():
 
     match science_category:
         case 'PHYSICS':
-            print(f'\nYou must take:\n\t(1) Foundations of Physics: {cs_physics[0]}\n\tOR \n\t(2) General Physics: {cs_physics[1]}')
+            print(f'\nYou must take:\n\t(1) General Physics: {cs_physics[0]}\n\tOR \n\t(2) Foundations of Physics: {cs_physics[1]}')
             science_selection = input("Would you like the first or second option (Enter 1 OR 2): ")
             while (science_selection != '1') and (science_selection != '2'):
                 print(f"\nInvalid input")

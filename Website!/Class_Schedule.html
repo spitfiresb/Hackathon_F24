@@ -11,16 +11,29 @@
     <h1>University of Oregon Grad Plan Generator</h1>
 
     <div class="dropdown-container">
-        <label for="majors" id="major-tittle">Choose your major:</label><br>
+        <label for="majors" id="major-title">Choose your major:</label><br>
         <select id="majors" name="majors">
             <option value="">--Select a Major--</option>
             <option value="computer-science">Computer Science</option>
             <option value="data-science">Data Science</option>
-            <option value="Business">Business</option>
-
+            <option value="business">Business</option>
         </select>
-      <button id="submit-button" onClick()="getSelectedMajor()">Generate Grad Plan</button>
+        <button id="submit-button" onclick="getSelectedMajor()">Generate Grad Plan</button>
     </div>
+
+    <script>
+        function getSelectedMajor() {
+            var selectedMajor = document.getElementById("majors").value;
+
+            // Check if a major is selected
+            if (selectedMajor) {
+                // Redirect the user to a new page based on the selected major
+                window.location.href = selectedMajor + "-grad-plan.html";
+            } else {
+                alert("Please select a major.");
+            }
+        }
+    </script>
 
 </body>
 </html>

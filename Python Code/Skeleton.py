@@ -128,7 +128,7 @@ df['Prerequisites'] = df['Prerequisites'].apply(clean_course_list)
 
 
 # Display the cleaned dataframe
-#print(df)
+print(df)
 
 # Dictionary containing majors and their required courses
 major_requirements = {

@@ -1,51 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Four-Year Plan Generator</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1>Four-Year Plan Generator</h1>
-        <form method="POST" class="mb-4">
-            <div class="form-group">
-                <label for="major">Select Major:</label>
-                <select class="form-control" id="major" name="major">
-                    <option value="Computer Science">Computer Science</option>
-                    <!-- You can add more majors here -->
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Generate Plan</button>
-        </form>
+<form method="POST">
+    <h1>Univeristy of Oregon Graduation Plan Generator</h1>
+    <label for="major">What is Your Major?</label>
+    <input type="text" id="major" name="major" required><br><br>
+    <link rel="stylesheet" href="styles.css">
 
-        {% if plan %}
-            <h2>Generated Four-Year Plan</h2>
-            <div class="accordion" id="accordionExample">
-                {% for year, terms in plan.items() %}
-                    <div class="card">
-                        <div class="card-header" id="heading{{ year }}">
-                            <h2 class="mb-0">
-                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ year }}" aria-expanded="true" aria-controls="collapse{{ year }}">
-                                    {{ year }}
-                                </button>
-                            </h2>
-                        </div>
-                        <div id="collapse{{ year }}" class="collapse" aria-labelledby="heading{{ year }}" data-parent="#accordionExample">
-                            <div class="card-body">
-                                {% for term, courses in terms.items() %}
-                                    <strong>{{ term }}: </strong>{{ ', '.join(courses) if courses else 'None' }}<br>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    </div>
+    <label for="year">What year are you in? (Freshman, Sophomore, Junior, Senior)</label>
+    <input type="text" id="year" name="year" required><br><br>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <label for="sci_classes">Enter science classes taken (if any):</label>
+    <input type="text" id="sci_classes" name="sci_classes"><br><br>
+
+    <label for="cs_classes">Enter CS classes taken:</label>
+    <input type="text" id="cs_classes" name="cs_classes"><br><br>
+
+    <label for="mt_classes">Enter Math classes taken:</label>
+    <input type="text" id="mt_classes" name="mt_classes"><br><br>
+
+    <button type="submit">Generate Schedule</button>
+</form>

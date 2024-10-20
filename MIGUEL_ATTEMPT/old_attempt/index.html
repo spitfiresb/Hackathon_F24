@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Four-Year Plan Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Four-Year Plan Generator</h1>
+        <form method="POST" class="mb-4">
+            <div class="form-group">
+                <label for="major">Select Major:</label>
+                <select class="form-control" id="major" name="major">
+                    <option value="Computer Science">Computer Science</option>
+                    <!-- You can add more majors here -->
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate Plan</button>
+        </form>
+
+        {% if plan %}
+            <h2>Generated Four-Year Plan</h2>
+            <div class="accordion" id="accordionExample">
+                {% for year, terms in plan.items() %}
+                    <div class="card">
+                        <div class="card-header" id="heading{{ year }}">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse{{ year }}" aria-expanded="true" aria-controls="collapse{{ year }}">
+                                    {{ year }}
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapse{{ year }}" class="collapse" aria-labelledby="heading{{ year }}" data-parent="#accordionExample">
+                            <div class="card-body">
+                                {% for term, courses in terms.items() %}
+                                    <strong>{{ term }}: </strong>{{ ', '.join(courses) if courses else 'None' }}<br>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

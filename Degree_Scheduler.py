@@ -29,7 +29,7 @@ def eliminate_previous(courses: list[str], courses_taken: str) -> list[str]:
     return courses[max_index + 1:] if max_index != -1 else courses
 
 
-def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classes: list[str], current_year: int):
+def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classes: list[str], wr_classes: list[str], ge_classes: list[str], current_year: int):
     """Output classes needed to take for each term based on what has been taken or not taken."""
     # terms which cs classes are offered
     fall = ["CS102", "CS122", "CS210", "CS212", "CS313", "CS314", "CS322", "CS415", "CS425", "CS422", "CS431", "CS432", "CS443", "CS451", "CS471", "CS410", "DSCI311", "CS455", "CS413", "J431"]
@@ -42,8 +42,8 @@ def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classe
     remaining_cs_classes = cs_classes[:]
     remaining_mt_classes = mt_classes[:]
     remaining_sci_classes = sci_classes[:]  # Add remaining science classes
-    remaining_wr_classes = ["WR121", "WR123", "WR320"]
-    remaining_gen_ed = ["A&L", "A&L", "A&L", "A&L", "SSC", "SSC", "SSC", "SSC", "GP", "US"]
+    remaining_wr_classes = wr_classes[:]
+    remaining_gen_ed = ge_classes[:]
 
     year = current_year
 
@@ -58,9 +58,8 @@ def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classe
 
         for term in term_schedule.keys():
             # Determine the number of CS classes per term (2 if CS313 has been taken, 1 otherwise)
-            cs313_taken = "CS313" not in remaining_cs_classes  # Check if CS313 is already taken
-            max_cs_per_term = 2 if cs313_taken else 1
-
+            cs212_taken = "CS212" not in remaining_cs_classes  # Check if CS313 is already taken
+            max_cs_per_term = 2 if cs212_taken else 1
             # Add CS classes to the term
             cs_count = 0
             iter_cs = 0
@@ -87,13 +86,16 @@ def build_term_schedule(cs_classes: list[str], mt_classes: list[str], sci_classe
             while len(term_schedule[term]) < 4:
                 if (len(remaining_wr_classes) > 0) and (year > 2):
                     term_schedule[term].append(remaining_wr_classes.pop(0))
-                elif remaining_wr_classes:  # there are remaining wr courses but not high enough year
+                    if len(term_schedule[term]) >= 4:
+                        break
+                if remaining_wr_classes:  # there are remaining wr courses but not high enough year
                     if remaining_wr_classes[0] == "WR320":
                         pass
                     else:
                         term_schedule[term].append(remaining_wr_classes.pop(0))
-
-                if remaining_gen_ed:
+                        if len(term_schedule[term]) >= 4:
+                            break
+                while remaining_gen_ed and len(term_schedule[term])<4:
                     random_gened_course = random.choice(remaining_gen_ed)
                     remaining_gen_ed.remove(random_gened_course)
                     term_schedule[term].append(random_gened_course)
@@ -175,13 +177,13 @@ def cs_science_req():
         case 'GEOGRAPHY':
             print(f'\nYou must take {cs_geography[0]} (The Natural Environment) and two classes from: {cs_geography[1]}')
             science_selection = (input(
-                "Which of the two classes would you like to select (Enter TWO numbers separated by a comma: 1,2,3 ): "))
+                "Which of the two classes would you like to select (Enter TWO numbers separated by a comma: 1,2,3): "))
             science_selection = re.split(",\s*", science_selection)
             while (not all(elem in ['1', '2', '3'] for elem in science_selection)) or (len(science_selection) != 2) or (science_selection[0]==science_selection[1]):
                 print(f"\nInvalid input")
                 print(science_selection)
                 science_selection = input(
-                    "Which of the two classes would you like to select (Enter TWO numbers separated by a comma: 1,2,3 ): ")
+                    "Which of the two classes would you like to select (Enter TWO numbers separated by a comma: 1,2,3): ")
                 science_selection = re.split(",\s*", science_selection)
             class_list = ['GEOG141']
             for i in range(len(science_selection)):
@@ -194,7 +196,7 @@ def cs_science_req():
         case 'PSYCHOLOGY':
             print(f'\nYou must take', cs_psycology[0], 'and two classes from:', cs_psycology[1])
             science_selection = (input(
-                "Which of the two classes would you like to select (Enter TWO numbers separated by a comma: 1,2,3,4 ): ")).upper()
+                "Which of the two classes would you like to select (Enter TWO numbers separated by a comma: 1,2,3,4): ")).upper()
             science_selection = re.split(",\s*", science_selection)
             while (not all(elem in ['1', '2', '3'] for elem in science_selection)) or (len(science_selection) != 2) or (science_selection[0]==science_selection[1]):
                 print(f"\nInvalid input")
@@ -343,7 +345,8 @@ def main():
     cs_classes = ["CS122", "CS210", "CS211", "CS212", "CS313", "CS314", "CS315", "CS330", "CS415", "CS422",
                   "CS425"]
     mt_classes = ["MATH231", "MATH232", "MATH251", "MATH252", "MATH253", "MATH341", "MATH342"]
-    upp_div_cs = []
+    wr_classes = ["WR121", "WR123", "WR320"]
+    ge_classes = ["A&L", "A&L", "A&L", "A&L", "SSC", "SSC", "SSC", "SSC", "GP", "US"]
     majors = [normalize_string(major) for major in ["Computer Science", "Data Science", "Business"]]  # Normalize majors
 
     input_major = input("What is Your Major?: ")
@@ -373,12 +376,48 @@ def main():
     remaining_sci_classes = eliminate_previous(selected_sci_classes, taken_sci_classes)
 
     # Prompt for taken CS classes
-    taken_cs_classes = input(f"\nEnter CS classes you have taken (separated by commas): ")
+    taken_cs_classes = input(f"\nEnter CS classes you have taken (separated by commas EX: CS122, CS210): ")
     remaining_cs_classes = eliminate_previous(cs_classes, taken_cs_classes)
 
     # Prompt for taken Math classes
-    taken_mt_classes = input(f"\nEnter Math classes you have taken (separated by commas): ")
+    taken_mt_classes = input(f"\nEnter Math classes you have taken (separated by commas EX: MATH231): ")
     remaining_mt_classes = eliminate_previous(mt_classes, taken_mt_classes)
+
+    # Prompt for taken Writing classes
+    taken_wr_classes = input(f"\nEnter Writing classes you have taken (separated by commas EX: WR121): ")
+    remaining_wr_classes = eliminate_previous(wr_classes, taken_wr_classes)
+
+    # Prompt for taken gen ed classes
+    taken_ge_classes = input(f"\nHave you taken any Ged-Ed classes? (Yes or No): ").upper()
+    while taken_ge_classes not in ["YES", "NO", "Y", "N"]:
+        print(f"\nInvalid input")
+        taken_ge_classes = input(f"\nHave you taken any Ged-Ed classes? (Yes or No): ").upper()
+    if taken_ge_classes in ["YES", "Y", "1"]:
+        al_count = input(f"\nHow many Arts and Letters Courses Have You Taken? (0-4): ")
+        while al_count not in ["0", "1", "2", "3", "4"]:
+            print(f"\nInvalid input")
+            al_count = input(f"\nHow many Arts and Letters Courses Have You Taken? (0-4): ")
+        ssc_count = input(f"\nHow many Social Science Courses Have You Taken? (0-4): ")
+        while ssc_count not in ["0", "1", "2", "3", "4"]:
+            print(f"\nInvalid input")
+            ssc_count = input(f"\nHow many Social Science Courses Have You Taken? (0-4): ")
+        gp_count = input(f"\nHave you taken a Global Perspectives Course? (Yes or No): ").upper()
+        while gp_count not in ["Y", "YES", "N", "NO", "1", "0"]:
+            print(f"\nInvalid input")
+            gp_count = input(f"\nHave you taken a Global Perspectives Course? (Yes or No): ").upper()
+        us_count = input(f"\nHave you taken a US: Difference, Inequality, Agency Course? (Yes or No): ").upper()
+        while us_count not in ["Y", "YES", "N", "NO", "1", "0"]:
+            print(f"\nInvalid input")
+            us_count = input(f"\nHave you taken a US: Difference, Inequality, Agency Course? (Yes or No): ").upper()
+    remaining_ge_courses = ge_classes
+    for i in range(int(al_count)):
+        remaining_ge_courses.remove("A&L")
+    for i in range(int(ssc_count)):
+        remaining_ge_courses.remove("SSC")
+    if gp_count in ["YES", "Y", "1"]:
+        remaining_ge_courses.remove("GP")
+    if us_count in ["YES", "Y", "1"]:
+        remaining_ge_courses.remove("US")
 
     remaining_upper_cs_classes = eliminate_previous(selected_concentration_classes[:-1], taken_cs_classes)
     remaining_cs_classes.extend(remaining_upper_cs_classes)
@@ -386,7 +425,7 @@ def main():
     remaining_mt_classes.extend(remaining_upper_math_classes)
 
     # Build and display the term schedule for the remaining years
-    build_term_schedule(remaining_cs_classes, remaining_mt_classes, remaining_sci_classes, current_year)
+    build_term_schedule(remaining_cs_classes, remaining_mt_classes, remaining_sci_classes, remaining_wr_classes, remaining_ge_courses, current_year)
 
 
 if __name__ == "__main__":

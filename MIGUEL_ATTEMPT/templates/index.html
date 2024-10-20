@@ -3,41 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>University of Oregon Grad Plan Generator</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>CS Major Requirements</title>
 </head>
 <body>
+    <h1>Select a Major</h1>
 
-    <h1>University of Oregon Grad Plan Generator</h1>
+    <!-- Form to select a major -->
+    <form method="POST">
+        <label for="major">Select Major:</label>
+        <select name="major" id="major">
+            <option value="CS">Computer Science</option>
+            <!-- Add more majors if necessary -->
+        </select>
+        <input type="submit" value="Show Requirements">
+    </form>
 
-    <!-- Dropdown form to select a major -->
-    <div class="dropdown-container">
-        <form action="/" method="POST">
-            <label for="majors" id="major-title">Choose your major:</label><br>
-            <select id="majors" name="majors">
-                <option value="">--Select a Major--</option>
-                <option value="Computer Science">Computer Science</option>
-                <option value="Sex">Sex</option>
-                <option value="Data Science">Data Science</option>
-                <option value="Business">Business</option>
-                <!-- Add other majors as needed -->
-            </select>
-            <button type="submit" id="submit-button">Generate Grad Plan</button>
-        </form>
-    </div>
+    {% if terms %}
+        <h2>Course Schedule for CS Major</h2>
 
-    <!-- Display the graduation plan if it exists -->
-    {% if grad_plan %}
-        <h2>Graduation Plan for {{ major }}</h2>
-        {% for year, terms in grad_plan.items() %}
-            <h3>{{ year }}</h3>
-            <ul>
-                {% for term, courses in terms.items() %}
-                    <li><strong>{{ term }}:</strong> {{ courses | join(', ') if courses else 'No courses' }}</li>
-                {% endfor %}
-            </ul>
-        {% endfor %}
+        <!-- Fall 2024 -->
+        <h3>Fall 2024</h3>
+        <table border="1">
+            <tr>
+                <th>Department</th>
+                <th>Course Number</th>
+                <th>Credits</th>
+                <th>Prerequisites</th>
+            </tr>
+            {% for row in terms['Fall 2024'] %}
+            <tr>
+                <td>{{ row['Department'] }}</td>
+                <td>{{ row['CourseNumber'] }}</td>
+                <td>{{ row['Credits'] }}</td>
+                <td>{{ row['Prerequisites'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- Winter 2025 -->
+        <h3>Winter 2025</h3>
+        <table border="1">
+            <tr>
+                <th>Department</th>
+                <th>Course Number</th>
+                <th>Credits</th>
+                <th>Prerequisites</th>
+            </tr>
+            {% for row in terms['Winter 2025'] %}
+            <tr>
+                <td>{{ row['Department'] }}</td>
+                <td>{{ row['CourseNumber'] }}</td>
+                <td>{{ row['Credits'] }}</td>
+                <td>{{ row['Prerequisites'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <!-- Spring 2025 -->
+        <h3>Spring 2025</h3>
+        <table border="1">
+            <tr>
+                <th>Department</th>
+                <th>Course Number</th>
+                <th>Credits</th>
+                <th>Prerequisites</th>
+            </tr>
+            {% for row in terms['Spring 2025'] %}
+            <tr>
+                <td>{{ row['Department'] }}</td>
+                <td>{{ row['CourseNumber'] }}</td>
+                <td>{{ row['Credits'] }}</td>
+                <td>{{ row['Prerequisites'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No course data available. Please select a major.</p>
     {% endif %}
-
 </body>
 </html>

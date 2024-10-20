@@ -1,5 +1,8 @@
+import pandas as pd
+import re
+
 # Load the CSV file into a DataFrame
-df = pd.read_csv('../Database/uo_courses_with_prerequisites.csv')
+df = pd.read_csv('uo_courses_with_prerequisites.csv')
 
 
 # Define a function to extract only the credits from the Course Name column
@@ -68,3 +71,6 @@ df.drop(columns="Credits")
 df = df.reset_index().drop(columns="index")
 df["Credits"] = credits_col
 df["Course"] = df["Department"] + df["CourseNumber"].astype(str)
+
+print(df)
+print(new_df)

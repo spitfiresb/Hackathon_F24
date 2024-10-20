@@ -1,0 +1,75 @@
+body {
+  background-image: url('uo_backdrop.jpg'); /* Add your image here */
+  background-size: cover; /* Makes the image cover the whole page */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Ensures the image doesn't repeat */
+  background-attachment: fixed; /* Makes the image stay fixed when scrolling */
+  margin: 0;
+  font-family: Arial, sans-serif; /* Consistent font */
+  padding: 20px; /* Padding around the body */
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+}
+
+@font-face {
+  font-family: 'United Sans Regular';
+  src: url('fonts/United Sans Reg Heavy.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+h1 {
+  text-align: center;
+  /* color: white; */
+  color: green;
+  font-size: 40px; 
+  font-family: 'United Sans Regular', Arial, sans-serif; /* Fallback to Arial in case the custom font doesn't load */
+  text-shadow: 1px 1px 2px rgba(54, 49, 49, 0.7); /* Adds shadow behind the text */
+}
+
+.dropdown-container {
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center; 
+  background-color: rgba(255, 255, 255, 0.2); /* Partially transparent white background */
+  padding: 50px; 
+  max-width: 500px; 
+  border-radius: 10px; 
+  backdrop-filter: blur(10px); /* Apply the frosted glass effect with blur */
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Optional subtle border */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional shadow for depth */
+}
+
+#major-tittle {
+  font-size: 30px; 
+  color: green; 
+  font-weight: bold; 
+}
+
+#majors , #year, #sci{
+    padding: 20px; 
+    border: 2px solid green; /* Correct way to set border width, style, and color */
+    border-radius: 5px; 
+    width: 400px; 
+}
+
+#submit-button {
+  margin-top: 20px; 
+  background-color: green; 
+  color: white; 
+  padding: 15px; 
+  border-style: none; 
+  border-radius: 5px; 
+  width: 400px; 
+  font-weight: normal; 
+  font-size: 1.0rem; 
+  transition: background-color 0.3s ease;
+}
+
+#submit-button:hover {
+    background-color: darkgreen; 
+}

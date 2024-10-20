@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Your Graduation Plan</title>
+</head>
+<body>
+    <h1>Your Graduation Plan</h1>
+
+    {% if schedule %}
+        {% for year, terms in schedule.items() %}
+            <h2>{{ year }}</h2>
+            <ul>
+                {% for term, classes in terms.items() %}
+                    <li><strong>{{ term }}:</strong> {{ ', '.join(classes) }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>No schedule data available.</p>
+    {% endif %}
+
+</body>
+</html>

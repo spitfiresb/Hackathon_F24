@@ -144,7 +144,6 @@ def cs_science_req():
         print(f"{science_category} is not a valid major.")
         science_category = input(
             f"\nWhich science sequence are you taking? (Physics, Chemistry, Geography, Geological Sciences, Psychology, Biology): ").upper()
-
     match science_category:
         case 'PHYSICS':
             print(f'\nYou must take:\n\t(1) General Physics: {cs_physics[0]}\n\tOR \n\t(2) Foundations of Physics: {cs_physics[1]}')

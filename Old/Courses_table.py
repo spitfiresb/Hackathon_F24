@@ -1,10 +1,6 @@
 import pandas as pd
 import re
 
-"""
-This program takes in all UO classes and returns a dataframe with Department, Course Number, number of Credits, Prerequisites 
-"""
-
 # Load the CSV file into a DataFrame
 df = pd.read_csv('uo_courses_with_prerequisites.csv')
 
@@ -45,4 +41,28 @@ df[['Department', 'Course Number']] = df['Course Code'].apply(split_course_code)
 new_df = df[['Department', 'Course Number', 'Credits', 'Prerequisites']]
 
 # Print the resulting DataFrame
+new_df = new_df.rename(columns={"Course Number": "CourseNumber"})
+new_df["CourseNumber"] = new_df["CourseNumber"].astype(int)
+
+# Define the function to clean and extract course codes (e.g., "CS 210")
+def clean_prerequisites(prereq):
+    if pd.isna(prereq):
+        return None
+    # Extract course codes (e.g., "CS 210") using regex pattern for course codes (letters followed by numbers)
+    courses = re.findall(r'[A-Z]+\s*\d{3}', prereq)
+    if len(courses) == 0:
+        return None
+    return courses
+
+# Apply the function to clean the 'Prerequisites' column
+new_df['Prerequisites'] = new_df['Prerequisites'].apply(clean_prerequisites)
+
+# # Step 1: Ensure 'Credits' is treated as a string and handle any non-string values
+new_df['Credits'] = new_df['Credits'].astype(str)  # Convert to string first to handle NaN values
+new_df['Credits'] = new_df['Credits'].str.extract('(\d+)')  # Extract digits
+# new_df['Credits'] = pd.to_numeric(df['Credits'], errors='coerce').fillna(0).astype(int)  # Convert to integer and fill NaN with 0
+
+
+
+# Display the cleaned dataframe
 print(new_df)

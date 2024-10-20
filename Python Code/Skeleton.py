@@ -116,6 +116,17 @@ df = df.reset_index().drop(columns="index")
 df["Credits"] = credits_col
 df["Course"] = df["Department"] + df["CourseNumber"].astype(str)
 
+
+def clean_course_list(course_list):
+    if course_list is None:
+        return None
+    # Remove non-breaking spaces and combine the subject and number
+    return [course.replace('\xa0', '') for course in course_list]
+
+
+df['Prerequisites'] = df['Prerequisites'].apply(clean_course_list)
+
+
 # Display the cleaned dataframe
 print(df)
 

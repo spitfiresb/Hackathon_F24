@@ -1,46 +1,38 @@
 import pandas as pd
 import re
 
-"""
-This script generates a four-year course plan for a selected major based on its required courses and prerequisites. 
-It reads course data from a pandas DataFrame and constructs a list of classes, ensuring that prerequisites are fulfilled 
-before advanced courses. The user selects their major, and the script outputs a term-by-term schedule over four academic 
-years starting from a given year and quarter.
-"""
-
-# Sample DataFrame with course availability
+# Sample DataFrame with course availability and prerequisites
 data = {
-    'Course': ['CS122', 'CS102', 'CS103', 'MATH101', 'MATH102', 'CS201', 'CS210', 'CS211', 'CS212',
-               'CS300', 'CS301', 'CS302', 'MATH251', 'MATH252', 'MATH253', 'CS401', 'CS402'],
-    'Code': ['101', '102', '103', '201', '202', '301', '302', '401', '402', 
-             '501', '502', '503', '601', '602', '603', '701', '702'],
-    'Course Name': ['Intro to CS', 'Data Structures', 'Algorithms', 'Calculus I', 'Calculus II',
-                    'Systems Programming', 'Advanced Topics in CS', 'Theory of Computation', 
-                    'Advanced Algorithms', 'Software Engineering', 'Database Systems', 
-                    'Machine Learning', 'Discrete Math', 'Linear Algebra', 'Statistics',
-                    'Capstone Project', 'Computer Networks'],
-    'Prerequisites': [None, 'CS122', 'CS102', 'MATH101', 'MATH101', 'CS103', 
-                     ['MATH251', 'MATH252'], 'CS210', 'CS211', 
-                     'CS212', 'CS302', 'MATH101', 'MATH102', 
-                     'MATH251', 'MATH252', ['CS401', 'CS402'], 'CS301'],
+    'Course': ['CS110', 'CS122', 'CS210', 'CS211', 'CS212', 'CS313', 'CS314', 'CS322', 'CS330', 'CS415', 'CS420', 'CS425',
+               'MATH112', 'MATH231', 'MATH232', 'MATH251', 'MATH252', 'MATH253'],
+    'Code': ['110', '122', '210', '211', '212', '313', '314', '322', '330', '415', '420', '425',
+             '112', '231', '232', '251', '252', '253'],
+    'Course Name': ['Intro to CS', 'CS Fundamentals I', 'CS Fundamentals II', 'Intermediate CS I', 'Intermediate CS II',
+                    'Data Structures', 'Algorithms', 'Software Engineering I', 'Operating Systems', 'Computer Networks',
+                    'Database Systems', 'Machine Learning', 'Pre-Calculus II', 'Discrete Math I', 'Discrete Math II',
+                    'Calculus I', 'Calculus II', 'Calculus III'],
+    'Prerequisites': [None, 'MATH101', 'MATH112Z', 'CS210', 'CS211', ['CS210', 'CS211', 'CS212', 'MATH231', 'MATH232'],
+                      ['CS210', 'CS211', 'CS212'], ['CS210', 'CS211', 'CS212'], 'CS314', 'CS330', 'CS315', 'CS315', 
+                      'MATH111Z', 'MATH251', 'MATH231', 'MATH112Z', 'MATH251', 'MATH252'],
     'Offered Terms': [
+        ['Fall', 'Winter'],  # CS110
         ['Fall', 'Winter'],  # CS122
-        ['Fall', 'Spring'],  # CS102
-        ['Winter'],          # CS103
-        ['Fall'],            # MATH101
-        ['Winter', 'Spring'], # MATH102
-        ['Fall'],            # CS201
-        ['Fall'],            # CS210
+        ['Fall', 'Winter'],  # CS210
         ['Winter'],          # CS211
         ['Spring'],          # CS212
-        ['Fall'],            # CS300
-        ['Fall', 'Winter'],  # CS301
-        ['Winter', 'Spring'], # CS302
+        ['Winter'],          # CS313
+        ['Spring'],          # CS314
+        ['Winter', 'Spring'],# CS322
+        ['Fall'],            # CS330
+        ['Winter'],          # CS415
+        ['Spring'],          # CS420
+        ['Winter'],          # CS425
+        ['Fall', 'Winter'],  # MATH112
+        ['Winter'],          # MATH231
+        ['Spring'],          # MATH232
         ['Fall'],            # MATH251
-        ['Spring'],          # MATH252
-        ['Fall', 'Spring'],  # MATH253
-        ['Fall'],            # CS401
-        ['Winter']           # CS402
+        ['Winter'],          # MATH252
+        ['Spring']           # MATH253
     ]
 }
 
@@ -132,19 +124,18 @@ print(df)
 
 # Dictionary containing majors and their required courses
 major_requirements = {
-    'Computer Science': ['CS211', 'CS212', 'CS301', 'CS302', 'CS401', 'CS402'],
+    'Computer Science': ['CS210', 'CS211', 'CS212', 'CS313', 'CS314', 'CS330', 'CS415', 'CS425'],
 }
 
 # Function to find prerequisites
 def find_prerequisites(course, df, checked_courses=None):
     if checked_courses is None:
-        checked_courses = set()  # Initialize the checked_courses set on the first call
+        checked_courses = set()
 
-    # Avoid infinite recursion
     if course in checked_courses:
-        return set()  # Return an empty set if this course has already been checked
+        return set()
 
-    checked_courses.add(course)  # Mark this course as checked
+    checked_courses.add(course)
     prereqs = set()
     
     row = df[df['Course'] == course]
@@ -176,7 +167,6 @@ def build_four_year_plan(major, starting_quarter='Fall', starting_year=2023):
     plan = {}
     courses_taken = []
     
-    # Create a mapping of quarter to index for easy reference
     quarter_mapping = ['Fall', 'Winter', 'Spring']
     
     for year in range(4):
@@ -189,18 +179,15 @@ def build_four_year_plan(major, starting_quarter='Fall', starting_year=2023):
             major_courses = major_requirements.get(major, [])
             required_courses = get_courses_for_major(major_courses, df)
             
-            # Sort the courses by the number of prerequisites (ascending)
             sorted_courses = sorted(required_courses, key=lambda c: len(find_prerequisites(c, df)))
 
             for course in sorted_courses:
-                # Check if the course is available in the current term
                 row = df[df['Course'] == course]
                 if not row.empty and quarter in row.iloc[0]['Offered Terms']:
                     if course not in courses_taken and len(plan[f'Year {year + 1}'][term]) < 4:
                         plan[f'Year {year + 1}'][term].append(course)
                         courses_taken.append(course)
             
-            # Increment year for the next quarter
             if quarter == 'Spring':
                 starting_year += 1
     
@@ -208,7 +195,7 @@ def build_four_year_plan(major, starting_quarter='Fall', starting_year=2023):
 
 # Main function
 def main():
-    selected_major = input("Please enter your major (e.g., Computer Science): ") #TODO this input needs to come from HTML!!
+    selected_major = input("Please enter your major (e.g., Computer Science): ")
     four_year_plan = build_four_year_plan(selected_major)
     
     for year, terms in four_year_plan.items():

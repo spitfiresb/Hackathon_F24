@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University of Oregon Grad Plan Generator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <h1>University of Oregon Grad Plan Generator</h1>
+
+    <!-- Dropdown form to select a major -->
+    <div class="dropdown-container">
+        <form action="/" method="POST">
+            <label for="majors" id="major-title">Choose your major:</label><br>
+            <select id="majors" name="majors">
+                <option value="">--Select a Major--</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Data Science">Data Science</option>
+                <option value="Business">Business</option>
+                <!-- Add other majors as needed -->
+            </select>
+            <button type="submit" id="submit-button">Generate Grad Plan</button>
+        </form>
+    </div>
+
+    <!-- Display the graduation plan if it exists -->
+    {% if grad_plan %}
+        <h2>Graduation Plan for {{ major }}</h2>
+        {% for year, terms in grad_plan.items() %}
+            <h3>{{ year }}</h3>
+            <ul>
+                {% for term, courses in terms.items() %}
+                    <li><strong>{{ term }}:</strong> {{ courses | join(', ') if courses else 'No courses' }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% endif %}
+
+</body>
+</html>

@@ -1,90 +1,122 @@
 from flask import Flask, render_template, request
 import pandas as pd
-import re
 
 app = Flask(__name__)
 
-# Load the preprocessed DataFrame with course catalog
-df = pd.read_csv('uo_courses_with_prerequisites.csv')
+# Data for courses, availability, and prerequisites
+data = {
+    'Course': ['CS110', 'CS122', 'CS210', 'CS211', 'CS212', 'CS313', 'CS314', 'CS330', 'CS415', 'CS425', 'MATH112', 'MATH231', 'MATH232', 'MATH251', 'MATH252', 'MATH253'],
+    'Course Name': ['Intro to CS', 'Intro to Programming', 'Systems Programming', 'Data Structures', 'Advanced Programming', 
+                    'Theory of Computation', 'Software Engineering', 'Algorithms', 'Database Systems', 'Machine Learning',
+                    'Pre-Calculus', 'Linear Algebra', 'Calculus II', 'Calculus I', 'Calculus II', 'Calculus III'],
+    'Prerequisites': [None, 'MATH101', 'MATH112Z', 'CS210', 'CS211', ['CS210', 'CS211', 'CS212', 'MATH231', 'MATH232'],
+                      ['CS210', 'CS211', 'CS212'], 'CS314', 'CS330', 'CS315', None, 'MATH251', 'MATH231', 'MATH112Z', 'MATH251', 'MATH252'],
+    'Offered Terms': [
+        ['Fall'],           # CS110
+        ['Fall', 'Winter'], # CS122
+        ['Fall'],           # CS210
+        ['Winter'],         # CS211
+        ['Spring'],         # CS212
+        ['Fall'],           # CS313
+        ['Winter'],         # CS314
+        ['Spring'],         # CS330
+        ['Fall'],           # CS415
+        ['Winter'],         # CS425
+        ['Fall', 'Winter'], # MATH112
+        ['Fall', 'Winter'], # MATH231
+        ['Spring'],         # MATH232
+        ['Fall'],           # MATH251
+        ['Spring', 'Winter'],         # MATH252
+        ['Fall', 'Spring']            # MATH253
+    ]
+}
 
-# Preprocessing functions (as per your original code)
-def extract_credits(course_name):
-    match = re.search(r'(\d+(-\d+)? Credits)', course_name)
-    return match.group(1) if match else 'No credits found'
+df = pd.DataFrame(data)
 
-def clean_prerequisites(prereq):
-    if pd.isna(prereq):
-        return ''
-    return re.sub(r'^(Prereq:|Requisites:)\s*', '', prereq)
+major_requirements = {
+    'Computer Science': ['CS210', 'CS211', 'CS212', 'CS313', 'CS314', 'CS330', 'CS415', 'CS425', 'MATH251', 'MATH252', 'MATH253'],
+}
 
-def split_course_code(course_code):
-    course_code = course_code.rstrip('.')
-    match = re.match(r'([A-Z]+)\s*(\d+)', course_code)
-    return pd.Series([match.group(1), match.group(2)]) if match else pd.Series([course_code, ''])
+# Function to find prerequisites
+def find_prerequisites(course, df, checked_courses=None):
+    if checked_courses is None:
+        checked_courses = set()
 
-# Apply preprocessing steps to the DataFrame
-df['Credits'] = df['Course Name'].apply(extract_credits)
-df['Prerequisites'] = df['Prerequisites'].apply(clean_prerequisites)
-df[['Department', 'CourseNumber']] = df['Course Code'].apply(split_course_code)
-df['Course'] = df['Department'] + df['CourseNumber'].astype(str)
+    if course in checked_courses:
+        return set()
 
-# Requirements for the CS major
-cs_lower_division = ['CS 210', 'CS 211', 'CS 212', 'MATH 231', 'MATH 232']
-cs_upper_division = ['CS 313', 'CS 314', 'CS 315', 'CS 330', 'CS 415', 'CS 422', 'CS 425']
-math_requirements = ['MATH 251', 'MATH 252', 'MATH 253', 'MATH 341', 'MATH 343']
-science_options = ['PHYS 201', 'PHYS 202', 'PHYS 203', 'CH 221', 'CH 222', 'CH 223', 'BI 211', 'BI 212', 'BI 213']
-writing_requirement = ['WR 320', 'WR 321']
+    checked_courses.add(course)
+    prereqs = set()
 
-# Function to filter courses from the catalog dynamically based on the major requirements
-def get_courses_for_requirement(requirement_courses):
-    # Filter the DataFrame for matching course codes in the requirement list
-    filtered_courses = df[df['Course'].isin(requirement_courses)]
+    row = df[df['Course'] == course]
+    if not row.empty and row.iloc[0]['Prerequisites']:
+        prerequisites = row.iloc[0]['Prerequisites']
+        if isinstance(prerequisites, list):
+            for prereq in prerequisites:
+                prereqs.add(prereq)
+                prereqs.update(find_prerequisites(prereq, df, checked_courses))
+        else:
+            prereqs.add(prerequisites)
+            prereqs.update(find_prerequisites(prerequisites, df, checked_courses))
     
-    # Debug: Print filtered courses to see if they are being matched
-    print(f"Filtered courses for requirement: {requirement_courses}")
-    print(filtered_courses)
+    return prereqs
+
+# Function to get courses for major
+def get_courses_for_major(major_courses, df):
+    required_courses = set(major_courses)
+    prereq_set = set()
     
-    return filtered_courses[['Department', 'CourseNumber', 'Credits', 'Prerequisites']]
-
-
-# Function to group courses by term (Fall, Winter, Spring) and limit to 4 per term
-def organize_courses_by_term(courses):
-    terms = {
-        'Fall 2024': [],
-        'Winter 2025': [],
-        'Spring 2025': []
-    }
+    for course in major_courses:
+        prereq_set.update(find_prerequisites(course, df))
     
-    # Loop over the courses and distribute them across terms
-    for i, (_, row) in enumerate(courses.iterrows()):
-        if len(terms['Fall 2024']) < 4:
-            terms['Fall 2024'].append(row)
-        elif len(terms['Winter 2025']) < 4:
-            terms['Winter 2025'].append(row)
-        elif len(terms['Spring 2025']) < 4:
-            terms['Spring 2025'].append(row)
+    all_courses = required_courses.union(prereq_set)
+    return all_courses
 
-    return terms
+# Function to check if prerequisites are fulfilled
+def prerequisites_fulfilled(course, courses_taken, df):
+    prerequisites = find_prerequisites(course, df)
+    return prerequisites.issubset(courses_taken)
+
+# Function to build the four-year plan
+def build_four_year_plan(major, starting_quarter='Fall', starting_year=2023):
+    plan = {}
+    courses_taken = {'MATH112Z'}
+    
+    quarter_mapping = ['Fall', 'Winter', 'Spring']
+    
+    for year in range(4):
+        plan[f'Year {year + 1}'] = {}
+        
+        for quarter in quarter_mapping:
+            term = f"{quarter} '{str(starting_year)[-2:]}"
+            plan[f'Year {year + 1}'][term] = []
+            
+            major_courses = major_requirements.get(major, [])
+            required_courses = get_courses_for_major(major_courses, df)
+            
+            sorted_courses = sorted(required_courses, key=lambda c: len(find_prerequisites(c, df)))
+
+            for course in sorted_courses:
+                row = df[df['Course'] == course]
+                if not row.empty and quarter in row.iloc[0]['Offered Terms']:
+                    if course not in courses_taken and prerequisites_fulfilled(course, courses_taken, df) and len(plan[f'Year {year + 1}'][term]) < 4:
+                        plan[f'Year {year + 1}'][term].append(course)
+                        courses_taken.add(course)
+            
+            if quarter == 'Spring':
+                starting_year += 1
+    
+    return plan
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    cs_major_courses = {}
-    terms = {}
-    selected_major = None
-    
+    four_year_plan = None
     if request.method == 'POST':
-        selected_major = request.form['major']
-        if selected_major == 'CS':
-            # Get the filtered CS major courses dynamically
-            lower_division_core = get_courses_for_requirement(cs_lower_division)
-            upper_division_core = get_courses_for_requirement(cs_upper_division)
+        major = request.form.get('major')
+        if major:
+            four_year_plan = build_four_year_plan(major)
+    
+    return render_template('index.html', plan=four_year_plan)
 
-            # Organize courses by terms and limit to 4 courses per term
-            terms = organize_courses_by_term(pd.concat([lower_division_core, upper_division_core]))
-
-    return render_template('index.html', major=selected_major, terms=terms)
-
-if __name__ == '__main__':
-    print(filtered_courses)
-
-    app.run(debug=True, port=5002)
+if __name__ == "__main__":
+    app.run(debug=True)

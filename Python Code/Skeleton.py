@@ -1,5 +1,12 @@
 import pandas as pd
 
+"""
+This script generates a four-year course plan for a selected major based on its required courses and prerequisites. 
+It reads course data from a pandas DataFrame and constructs a list of classes, ensuring that prerequisites are fulfilled 
+before advanced courses. The user selects their major, and the script outputs a term-by-term schedule over four academic 
+years starting from a given year and quarter.
+"""
+
 # Sample DataFrame with course availability
 data = {
     'Course': ['CS122', 'CS102', 'CS103', 'MATH101', 'MATH102', 'CS201', 'CS210', 'CS211', 'CS212',
@@ -117,7 +124,7 @@ def build_four_year_plan(major, starting_quarter='Fall', starting_year=2023):
 
 # Main function
 def main():
-    selected_major = input("Please enter your major (e.g., Computer Science): ")
+    selected_major = input("Please enter your major (e.g., Computer Science): ") #TODO this input needs to come from HTML!!
     four_year_plan = build_four_year_plan(selected_major)
     
     for year, terms in four_year_plan.items():

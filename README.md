@@ -3,6 +3,8 @@
 
 ## Overview
 
+This is a project made by me and my group members during the Fall 2024 University of Oregon Hackathon. Included in this repository is all the files that were created throughout the process, showcasing our entire workflow. 
+
 The Degree Scheduler project is designed to help university students plan and manage their four-year course schedules effectively. The program utilizes course prerequisite data and scheduling logic to assist students in selecting the right courses for each term, while ensuring that they meet all major requirements. 
 
 This project is especially useful for students following a structured academic program, like Computer Science or Data Science, as it can generate customized schedules based on prerequisites and course availability.
